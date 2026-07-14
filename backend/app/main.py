@@ -12,13 +12,14 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://library-management-system-vert-pi.vercel.app/"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
+   CORSMiddleware,
+   allow_origins=[
+       "https://library-management-system-vert-pi.vercel.app"
+   ],
+   allow_credentials=True,
+   allow_methods=["*"],
+   allow_headers=["*"],
 )
-
 
 @app.get("/")
 def root():
