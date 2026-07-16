@@ -14,7 +14,8 @@ app = FastAPI()
 app.add_middleware(
    CORSMiddleware,
    allow_origins=[
-       "https://library-management-system-vert-pi.vercel.app"
+        "http://localhost:5173/",
+        "https://library-management-system-vert-pi.vercel.app"
    ],
    allow_credentials=True,
    allow_methods=["*"],
