@@ -7,36 +7,43 @@ from app.database import engine, get_db
 from app.models import Base, Book, Member, BorrowRecord
 from app import schemas
 
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+
 app.add_middleware(
-   CORSMiddleware,
-   allow_origins=[
-        "http://localhost:5173/",
-        "https://library-management-system-vert-pi.vercel.app"
-   ],
-   allow_credentials=True,
-   allow_methods=["*"],
-   allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://library-management-system-vert-pi.vercel.app",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 @app.get("/")
 def root():
     return {"message": "Library Management"}
 
 
-# BOOK APIs 
+# ======================
+# BOOK APIs
+# ======================
 
-# Create Book
+
 @app.post("/books", response_model=schemas.Book)
-def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
+def create_book(
+    book: schemas.BookCreate,
+    db: Session = Depends(get_db)
+):
     new_book = Book(
         title=book.title,
         author=book.author,
-        published_year=book.published_year,
-        available=book.available
+        published_year=book.published_year
     )
 
     db.add(new_book)
@@ -46,39 +53,51 @@ def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
     return new_book
 
 
-# Get All Books
+
 @app.get("/books", response_model=list[schemas.Book])
 def get_books(db: Session = Depends(get_db)):
     return db.query(Book).all()
 
 
-# Get Book By ID
+
 @app.get("/books/{book_id}", response_model=schemas.Book)
-def get_book(book_id: int, db: Session = Depends(get_db)):
-    book = db.query(Book).filter(Book.id == book_id).first()
+def get_book(
+    book_id: int,
+    db: Session = Depends(get_db)
+):
+    book = db.query(Book).filter(
+        Book.id == book_id
+    ).first()
 
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found"
+        )
 
     return book
 
 
-# Update Book
+
 @app.put("/books/{book_id}", response_model=schemas.Book)
 def update_book(
     book_id: int,
     updated_book: schemas.BookCreate,
     db: Session = Depends(get_db)
 ):
-    book = db.query(Book).filter(Book.id == book_id).first()
+    book = db.query(Book).filter(
+        Book.id == book_id
+    ).first()
 
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found"
+        )
 
     book.title = updated_book.title
     book.author = updated_book.author
     book.published_year = updated_book.published_year
-    book.available = updated_book.available
 
     db.commit()
     db.refresh(book)
@@ -86,31 +105,45 @@ def update_book(
     return book
 
 
-# Delete Book
+
 @app.delete("/books/{book_id}")
-def delete_book(book_id: int, db: Session = Depends(get_db)):
-    book = db.query(Book).filter(Book.id == book_id).first()
+def delete_book(
+    book_id: int,
+    db: Session = Depends(get_db)
+):
+    book = db.query(Book).filter(
+        Book.id == book_id
+    ).first()
 
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
-
-    if not book.available:
         raise HTTPException(
-            status_code=400,
-            detail="Cannot delete a borrowed book"
+            status_code=404,
+            detail="Book not found"
         )
+
+    db.query(BorrowRecord).filter(
+        BorrowRecord.book_id == book_id
+    ).delete()
 
     db.delete(book)
     db.commit()
 
-    return {"message": "Book deleted successfully"}
+    return {
+        "message": "Book deleted successfully"
+    }
 
 
-# MEMBER APIs 
 
-# Create Member
+# ======================
+# MEMBER APIs
+# ======================
+
+
 @app.post("/members", response_model=schemas.Member)
-def create_member(member: schemas.MemberCreate, db: Session = Depends(get_db)):
+def create_member(
+    member: schemas.MemberCreate,
+    db: Session = Depends(get_db)
+):
     new_member = Member(
         name=member.name,
         email=member.email
@@ -123,34 +156,47 @@ def create_member(member: schemas.MemberCreate, db: Session = Depends(get_db)):
     return new_member
 
 
-# Get All Members
+
 @app.get("/members", response_model=list[schemas.Member])
 def get_members(db: Session = Depends(get_db)):
     return db.query(Member).all()
 
 
-# Get Member By ID
+
 @app.get("/members/{member_id}", response_model=schemas.Member)
-def get_member(member_id: int, db: Session = Depends(get_db)):
-    member = db.query(Member).filter(Member.id == member_id).first()
+def get_member(
+    member_id: int,
+    db: Session = Depends(get_db)
+):
+    member = db.query(Member).filter(
+        Member.id == member_id
+    ).first()
 
     if member is None:
-        raise HTTPException(status_code=404, detail="Member not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Member not found"
+        )
 
     return member
 
 
-# Update Member
+
 @app.put("/members/{member_id}", response_model=schemas.Member)
 def update_member(
     member_id: int,
     updated_member: schemas.MemberCreate,
     db: Session = Depends(get_db)
 ):
-    member = db.query(Member).filter(Member.id == member_id).first()
+    member = db.query(Member).filter(
+        Member.id == member_id
+    ).first()
 
     if member is None:
-        raise HTTPException(status_code=404, detail="Member not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Member not found"
+        )
 
     member.name = updated_member.name
     member.email = updated_member.email
@@ -161,18 +207,28 @@ def update_member(
     return member
 
 
-# Delete Member
+
 @app.delete("/members/{member_id}")
-def delete_member(member_id: int, db: Session = Depends(get_db)):
-    member = db.query(Member).filter(Member.id == member_id).first()
+def delete_member(
+    member_id: int,
+    db: Session = Depends(get_db)
+):
+    member = db.query(Member).filter(
+        Member.id == member_id
+    ).first()
 
     if member is None:
-        raise HTTPException(status_code=404, detail="Member not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Member not found"
+        )
+
 
     active_record = db.query(BorrowRecord).filter(
         BorrowRecord.member_id == member_id,
         BorrowRecord.return_date == None
     ).first()
+
 
     if active_record:
         raise HTTPException(
@@ -180,35 +236,63 @@ def delete_member(member_id: int, db: Session = Depends(get_db)):
             detail="Member has borrowed books and cannot be deleted."
         )
 
+
     db.delete(member)
     db.commit()
 
-    return {"message": "Member deleted successfully"}
+    return {
+        "message": "Member deleted successfully"
+    }
 
 
+
+# ======================
 # BORROW APIs
+# ======================
 
-# Borrow Book
+
 @app.post("/borrow", response_model=schemas.BorrowRecord)
 def borrow_book(
     record: schemas.BorrowRecordCreate,
     db: Session = Depends(get_db)
 ):
-    book = db.query(Book).filter(Book.id == record.book_id).first()
+
+    book = db.query(Book).filter(
+        Book.id == record.book_id
+    ).first()
+
 
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found"
+        )
 
-    if not book.available:
+
+    active_borrow = db.query(BorrowRecord).filter(
+        BorrowRecord.book_id == record.book_id,
+        BorrowRecord.return_date == None
+    ).first()
+
+
+    if active_borrow:
         raise HTTPException(
             status_code=400,
             detail="Book is already borrowed"
         )
 
-    member = db.query(Member).filter(Member.id == record.member_id).first()
+
+    member = db.query(Member).filter(
+        Member.id == record.member_id
+    ).first()
+
 
     if member is None:
-        raise HTTPException(status_code=404, detail="Member not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Member not found"
+        )
+
 
     new_record = BorrowRecord(
         book_id=record.book_id,
@@ -216,7 +300,6 @@ def borrow_book(
         borrow_date=datetime.utcnow()
     )
 
-    book.available = False
 
     db.add(new_record)
     db.commit()
@@ -225,12 +308,17 @@ def borrow_book(
     return new_record
 
 
-# Return Book
+
 @app.put("/borrow/{record_id}/return", response_model=schemas.BorrowRecord)
-def return_book(record_id: int, db: Session = Depends(get_db)):
+def return_book(
+    record_id: int,
+    db: Session = Depends(get_db)
+):
+
     record = db.query(BorrowRecord).filter(
         BorrowRecord.id == record_id
     ).first()
+
 
     if record is None:
         raise HTTPException(
@@ -238,18 +326,15 @@ def return_book(record_id: int, db: Session = Depends(get_db)):
             detail="Borrow record not found"
         )
 
+
     if record.return_date is not None:
         raise HTTPException(
             status_code=400,
             detail="Book already returned"
         )
 
+
     record.return_date = datetime.utcnow()
-
-    book = db.query(Book).filter(Book.id == record.book_id).first()
-
-    if book:
-        book.available = True
 
     db.commit()
     db.refresh(record)
@@ -257,7 +342,9 @@ def return_book(record_id: int, db: Session = Depends(get_db)):
     return record
 
 
-# Get All Borrow Records
+
 @app.get("/borrow", response_model=list[schemas.BorrowRecord])
-def get_borrow_records(db: Session = Depends(get_db)):
+def get_borrow_records(
+    db: Session = Depends(get_db)
+):
     return db.query(BorrowRecord).all()

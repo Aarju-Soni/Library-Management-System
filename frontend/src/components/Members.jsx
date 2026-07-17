@@ -3,15 +3,22 @@ import api from "../api/axios";
 
 function Members() {
   const [members, setMembers] = useState([]);
-  const [form, setForm] = useState({ name: "", email: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+  });
+
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
 
   const fetchMembers = async () => {
     try {
+      setError("");
+
       const res = await api.get("/members");
       setMembers(res.data);
     } catch (err) {
+      console.error(err);
       setError("Failed to load members");
     }
   };
@@ -21,19 +28,27 @@ function Members() {
   }, []);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const resetForm = () => {
-    setForm({ name: "", email: "" });
+    setForm({
+      name: "",
+      email: "",
+    });
+
     setEditingId(null);
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setError("");
 
     try {
@@ -44,7 +59,7 @@ function Members() {
       }
 
       resetForm();
-      fetchMembers();
+      await fetchMembers();
     } catch (err) {
       setError(err.response?.data?.detail || "Something went wrong");
     }
@@ -57,16 +72,20 @@ function Members() {
     });
 
     setEditingId(member.id);
+    setError("");
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this member?")) return;
+    if (!window.confirm("Delete this member?")) {
+      return;
+    }
 
     try {
       await api.delete(`/members/${id}`);
-      fetchMembers();
+
+      await fetchMembers();
     } catch (err) {
-      setError(err.response?.data?.detail || "Failed to delete");
+      setError(err.response?.data?.detail || "Failed to delete member");
     }
   };
 
@@ -76,7 +95,12 @@ function Members() {
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: "1.5rem" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          marginBottom: "1.5rem",
+        }}
+      >
         <input
           name="name"
           placeholder="Name"
@@ -92,9 +116,17 @@ function Members() {
           value={form.email}
           onChange={handleChange}
           required
+          style={{
+            marginLeft: "0.5rem",
+          }}
         />
 
-        <button type="submit" style={{ marginLeft: "0.5rem" }}>
+        <button
+          type="submit"
+          style={{
+            marginLeft: "0.5rem",
+          }}
+        >
           {editingId ? "Update Member" : "Add Member"}
         </button>
 
@@ -102,7 +134,9 @@ function Members() {
           <button
             type="button"
             onClick={resetForm}
-            style={{ marginLeft: "0.5rem" }}
+            style={{
+              marginLeft: "0.5rem",
+            }}
           >
             Cancel
           </button>
@@ -127,28 +161,41 @@ function Members() {
         </thead>
 
         <tbody>
-          {members.map((member) => (
-            <tr key={member.id}>
-              <td>{member.name}</td>
-              <td>{member.email}</td>
-              <td>
-                {new Date(member.joined_date).toLocaleDateString()}
-              </td>
-
-              <td>
-                <button onClick={() => handleEdit(member)}>
-                  Edit
-                </button>
-
-                <button
-                  onClick={() => handleDelete(member.id)}
-                  style={{ marginLeft: "0.5rem" }}
-                >
-                  Delete
-                </button>
+          {members.length === 0 ? (
+            <tr>
+              <td
+                colSpan="4"
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                No members found.
               </td>
             </tr>
-          ))}
+          ) : (
+            members.map((member) => (
+              <tr key={member.id}>
+                <td>{member.name}</td>
+
+                <td>{member.email}</td>
+
+                <td>{new Date(member.joined_date).toLocaleDateString()}</td>
+
+                <td>
+                  <button onClick={() => handleEdit(member)}>Edit</button>
+
+                  <button
+                    onClick={() => handleDelete(member.id)}
+                    style={{
+                      marginLeft: "0.5rem",
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

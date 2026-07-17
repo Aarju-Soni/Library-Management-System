@@ -3,6 +3,8 @@ import api from "../api/axios";
 
 function Books() {
   const [books, setBooks] = useState([]);
+  const [records, setRecords] = useState([]);
+
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
 
@@ -10,101 +12,159 @@ function Books() {
     title: "",
     author: "",
     published_year: "",
-    available: true,
   });
+
 
   useEffect(() => {
     fetchBooks();
   }, []);
 
+
   const fetchBooks = async () => {
     try {
-      const res = await api.get("/books");
-      setBooks(res.data);
+      const [booksRes, recordsRes] = await Promise.all([
+        api.get("/books"),
+        api.get("/borrow"),
+      ]);
+
+      setBooks(booksRes.data);
+      setRecords(recordsRes.data);
+
     } catch (err) {
+      console.error(err);
       setError("Failed to load books");
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
 
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
+  const isBookBorrowed = (bookId) => {
+    return records.some(
+      (record) =>
+        record.book_id === bookId &&
+        !record.return_date
+    );
   };
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
 
   const resetForm = () => {
     setForm({
       title: "",
       author: "",
       published_year: "",
-      available: true,
     });
 
     setEditingId(null);
     setError("");
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setError("");
 
     const bookData = {
       ...form,
-      published_year: parseInt(form.published_year),
+      published_year: Number(form.published_year),
     };
 
-    if (isNaN(bookData.published_year)) {
-      setError("Published year must be a valid number.");
-      return;
-    }
 
     try {
+
       if (editingId) {
-        await api.put(`/books/${editingId}`, bookData);
+        await api.put(
+          `/books/${editingId}`,
+          bookData
+        );
       } else {
-        await api.post("/books", bookData);
+        await api.post(
+          "/books",
+          bookData
+        );
       }
 
+
       resetForm();
-      fetchBooks();
+      await fetchBooks();
+
+
     } catch (err) {
-      setError(err.response?.data?.detail || "Something went wrong");
+      setError(
+        err.response?.data?.detail ||
+        "Something went wrong"
+      );
     }
   };
 
+
   const handleEdit = (book) => {
+
     setForm({
       title: book.title,
       author: book.author,
       published_year: book.published_year,
-      available: book.available,
     });
 
     setEditingId(book.id);
     setError("");
   };
 
+
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this book?")) return;
+
+    if (!window.confirm("Delete this book?")) {
+      return;
+    }
+
 
     try {
+
       await api.delete(`/books/${id}`);
-      fetchBooks();
+      await fetchBooks();
+
     } catch (err) {
-      setError(err.response?.data?.detail || "Failed to delete book");
+
+      setError(
+        err.response?.data?.detail ||
+        "Failed to delete book"
+      );
+
     }
   };
 
+
+
   return (
     <div>
+
       <h2>Books</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+      {error && (
+        <p style={{ color: "red" }}>
+          {error}
+        </p>
+      )}
+
+
+
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          marginBottom: "20px",
+        }}
+      >
+
         <input
           type="text"
           name="title"
@@ -114,6 +174,7 @@ function Books() {
           required
         />
 
+
         <input
           type="text"
           name="author"
@@ -121,7 +182,11 @@ function Books() {
           value={form.author}
           onChange={handleChange}
           required
+          style={{
+            marginLeft: "10px",
+          }}
         />
+
 
         <input
           type="number"
@@ -130,32 +195,39 @@ function Books() {
           value={form.published_year}
           onChange={handleChange}
           required
+          style={{
+            marginLeft: "10px",
+          }}
         />
 
-        <label style={{ marginLeft: "10px" }}>
-          <input
-            type="checkbox"
-            name="available"
-            checked={form.available}
-            onChange={handleChange}
-          />
-          {" "}Available
-        </label>
 
-        <button type="submit" style={{ marginLeft: "10px" }}>
+        <button
+          type="submit"
+          style={{
+            marginLeft: "10px",
+          }}
+        >
           {editingId ? "Update Book" : "Add Book"}
         </button>
+
 
         {editingId && (
           <button
             type="button"
             onClick={resetForm}
-            style={{ marginLeft: "10px" }}
+            style={{
+              marginLeft: "10px",
+            }}
           >
             Cancel
           </button>
         )}
+
       </form>
+
+
+
+
 
       <table
         border="1"
@@ -165,51 +237,98 @@ function Books() {
           borderCollapse: "collapse",
         }}
       >
+
         <thead>
           <tr>
             <th>Title</th>
             <th>Author</th>
             <th>Published Year</th>
-            <th>Available</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
 
+
+
         <tbody>
+
           {books.length === 0 ? (
+
             <tr>
-              <td colSpan="5" style={{ textAlign: "center" }}>
+              <td
+                colSpan="5"
+                style={{
+                  textAlign: "center",
+                }}
+              >
                 No books found.
               </td>
             </tr>
+
           ) : (
-            books.map((book) => (
-              <tr key={book.id}>
-                <td>{book.title}</td>
-                <td>{book.author}</td>
-                <td>{book.published_year}</td>
-                <td>{book.available ? "Yes" : "No"}</td>
 
-                <td>
-                  <button onClick={() => handleEdit(book)}>
-                    Edit
-                  </button>
+            books.map((book) => {
 
-                  <button
-                    onClick={() => handleDelete(book.id)}
-                    disabled={!book.available}
-                    style={{ marginLeft: "10px" }}
-                  >
-                    {book.available ? "Delete" : "Borrowed"}
-                  </button>
-                </td>
-              </tr>
-            ))
+              const borrowed = isBookBorrowed(book.id);
+
+
+              return (
+
+                <tr key={book.id}>
+
+                  <td>{book.title}</td>
+
+                  <td>{book.author}</td>
+
+                  <td>{book.published_year}</td>
+
+
+                  <td>
+                    {borrowed ? "Borrowed" : "Available"}
+                  </td>
+
+
+                  <td>
+
+                    <button
+                      onClick={() =>
+                        handleEdit(book)
+                      }
+                    >
+                      Edit
+                    </button>
+
+
+                    <button
+                      onClick={() =>
+                        handleDelete(book.id)
+                      }
+                      disabled={borrowed}
+                      style={{
+                        marginLeft: "10px",
+                      }}
+                    >
+                      {borrowed ? "Borrowed" : "Delete"}
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              );
+
+            })
+
           )}
+
         </tbody>
+
       </table>
+
+
     </div>
   );
 }
+
 
 export default Books;
