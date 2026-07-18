@@ -1,0 +1,298 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap");
+
+.mem-page {
+  min-height: 100vh;
+  padding: 48px 24px;
+  background: #e7ecef;
+  font-family: "Work Sans", -apple-system, sans-serif;
+  color: #1c2530;
+  box-sizing: border-box;
+}
+
+.mem-page *,
+.mem-page *::before,
+.mem-page *::after {
+  box-sizing: border-box;
+}
+
+.mem-ledger {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #d3dbe1;
+  border-radius: 6px;
+}
+
+.mem-header {
+  padding: 32px 40px 20px;
+  border-bottom: 1px solid #d3dbe1;
+}
+
+.mem-eyebrow {
+  display: inline-block;
+  font-family: "Space Mono", monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #b5482b;
+  margin-bottom: 8px;
+}
+
+.mem-title {
+  margin: 0;
+  font-family: "Work Sans", sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #1c2530;
+}
+
+.mem-error {
+  margin: 20px 40px 0;
+  padding: 10px 14px;
+  background: rgba(181, 72, 43, 0.08);
+  border-left: 3px solid #b5482b;
+  border-radius: 2px;
+  color: #b5482b;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.mem-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 28px 40px 30px;
+  border-bottom: 1px solid #d3dbe1;
+}
+
+.mem-field {
+  position: relative;
+  min-width: 200px;
+  flex: 1;
+}
+
+.mem-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: "Work Sans", sans-serif;
+  font-size: 14px;
+  color: #1c2530;
+  background: #f5f7f8;
+  border: 1px solid #cbd5dc;
+  border-radius: 4px;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.mem-input:focus {
+  border-color: #2d5f6b;
+  box-shadow: 0 0 0 3px rgba(45, 95, 107, 0.15);
+}
+
+.mem-floating-label {
+  position: absolute;
+  left: 12px;
+  top: 11px;
+  font-family: "Work Sans", sans-serif;
+  font-size: 14px;
+  color: #9aa6af;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  background: #f5f7f8;
+  padding: 0 4px;
+}
+
+.mem-input:focus + .mem-floating-label,
+.mem-input:not(:placeholder-shown) + .mem-floating-label {
+  top: -9px;
+  left: 8px;
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #2d5f6b;
+  background: #fff;
+}
+
+.mem-form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.mem-btn {
+  font-family: "Work Sans", sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.08s ease;
+  white-space: nowrap;
+}
+
+.mem-btn:active {
+  transform: translateY(1px);
+}
+
+.mem-btn-primary {
+  background: #b5482b;
+  color: #fff;
+}
+
+.mem-btn-primary:hover {
+  background: #963a20;
+}
+
+.mem-btn-ghost {
+  background: transparent;
+  color: #7c8994;
+  border-color: #cbd5dc;
+}
+
+.mem-btn-ghost:hover {
+  color: #1c2530;
+  border-color: #1c2530;
+}
+
+.mem-btn-small {
+  padding: 6px 14px;
+  font-size: 12.5px;
+  background: #fff;
+  color: #1c2530;
+  border: 1px solid #cbd5dc;
+}
+
+.mem-btn-small:hover {
+  border-color: #2d5f6b;
+  color: #2d5f6b;
+}
+
+.mem-btn-danger {
+  color: #b5482b;
+}
+
+.mem-btn-danger:hover {
+  border-color: #b5482b;
+  color: #b5482b;
+}
+
+.mem-table-wrap {
+  padding: 8px 40px 30px;
+  overflow-x: auto;
+}
+
+.mem-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.mem-table thead th {
+  text-align: left;
+  padding: 10px 12px;
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7c8994;
+  background: #f5f7f8;
+  border-bottom: 1px solid #d3dbe1;
+}
+
+.mem-th-actions {
+  text-align: right;
+}
+
+.mem-row td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #e9eef1;
+}
+
+.mem-row:hover {
+  background: #f5f9fa;
+}
+
+.mem-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mem-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.mem-name {
+  font-weight: 600;
+  color: #1c2530;
+}
+
+.mem-email-cell {
+  color: #55606a;
+}
+
+.mem-date-cell {
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  color: #55606a;
+}
+
+.mem-actions-cell {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.mem-empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: #9aa6af;
+  font-style: italic;
+}
+
+@media (max-width: 700px) {
+  .mem-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mem-header,
+  .mem-table-wrap {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.mem-input:focus-visible,
+.mem-btn:focus-visible {
+  outline: 2px solid #2d5f6b;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mem-btn,
+  .mem-floating-label,
+  .mem-input {
+    transition: none;
+  }
+}

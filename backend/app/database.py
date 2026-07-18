@@ -1,5 +1,4 @@
 import os
-from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
@@ -14,10 +13,11 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
-    bind=engine
+    bind=engine,
 )
 
 Base = declarative_base()
+
 
 def get_db():
     db = SessionLocal()
@@ -25,5 +25,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
-    

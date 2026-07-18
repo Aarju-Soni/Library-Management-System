@@ -1,0 +1,71 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap");
+
+.nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 0 40px;
+  height: 60px;
+  background: #fff;
+  border-bottom: 1px solid #d3dbe1;
+  font-family: "Work Sans", -apple-system, sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-mark {
+  font-family: "Space Mono", monospace;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #b5482b;
+  padding: 4px 8px;
+  border: 1.5px solid #b5482b;
+  border-radius: 4px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  height: 100%;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  color: #55606a;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.nav-link:hover {
+  color: #1c2530;
+}
+
+.nav-link-active {
+  color: #1c2530;
+  border-bottom-color: #b5482b;
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid #2d5f6b;
+  outline-offset: 2px;
+}
+
+@media (max-width: 500px) {
+  .nav-bar {
+    padding: 0 20px;
+    gap: 20px;
+  }
+
+  .nav-links {
+    gap: 18px;
+  }
+}

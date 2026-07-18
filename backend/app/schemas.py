@@ -1,21 +1,18 @@
-from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
 
+from pydantic import BaseModel, EmailStr, Field
 
 
-# BOOK SCHEMAS
-
+# Book Schemas
 class BookBase(BaseModel):
     title: str
     author: str
-    published_year: int
-
+    published_year: int = Field(ge=0, le=2100)
 
 
 class BookCreate(BookBase):
     pass
-
 
 
 class Book(BookBase):
@@ -25,20 +22,14 @@ class Book(BookBase):
         from_attributes = True
 
 
-
-
-
-# MEMBER SCHEMAS
-
+# Member Schemas
 class MemberBase(BaseModel):
     name: str
     email: EmailStr
 
 
-
 class MemberCreate(MemberBase):
     pass
-
 
 
 class Member(MemberBase):
@@ -49,20 +40,14 @@ class Member(MemberBase):
         from_attributes = True
 
 
-
-
-
-# BORROW RECORD SCHEMAS
-
+# Borrow Record Schemas
 class BorrowRecordBase(BaseModel):
     book_id: int
     member_id: int
 
 
-
 class BorrowRecordCreate(BorrowRecordBase):
     pass
-
 
 
 class BorrowRecord(BorrowRecordBase):

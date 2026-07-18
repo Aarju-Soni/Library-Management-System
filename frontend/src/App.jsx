@@ -1,8 +1,8 @@
 import {BrowserRouter, Routes, Route} from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Books from "./components/Books"
-import Members from "./components/Members"
-import Borrow from "./components/Borrow"
+import Navbar from "./components/Navbar/Navbar";
+import Books from "./components/Books/Books"
+import Members from "./components/Members/Members"
+import Borrow from "./components/Borrow/Borrow"
 
 function App() {
 
