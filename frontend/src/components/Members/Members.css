@@ -21,7 +21,11 @@
   background: #fff;
   border: 1px solid #d3dbe1;
   border-radius: 6px;
+  overflow: hidden;
 }
+
+
+/* HEADER */
 
 .mem-header {
   padding: 32px 40px 20px;
@@ -41,11 +45,13 @@
 
 .mem-title {
   margin: 0;
-  font-family: "Work Sans", sans-serif;
   font-weight: 700;
   font-size: 28px;
   color: #1c2530;
 }
+
+
+/* ERROR */
 
 .mem-error {
   margin: 20px 40px 0;
@@ -57,6 +63,9 @@
   font-size: 13.5px;
   font-weight: 600;
 }
+
+
+/* FORM */
 
 .mem-form {
   display: flex;
@@ -83,9 +92,6 @@
   border: 1px solid #cbd5dc;
   border-radius: 4px;
   outline: none;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
 }
 
 .mem-input:focus {
@@ -97,7 +103,6 @@
   position: absolute;
   left: 12px;
   top: 11px;
-  font-family: "Work Sans", sans-serif;
   font-size: 14px;
   color: #9aa6af;
   pointer-events: none;
@@ -113,7 +118,6 @@
   font-family: "Space Mono", monospace;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #2d5f6b;
   background: #fff;
@@ -123,6 +127,9 @@
   display: flex;
   gap: 10px;
 }
+
+
+/* BUTTONS */
 
 .mem-btn {
   font-family: "Work Sans", sans-serif;
@@ -136,7 +143,6 @@
     background 0.15s ease,
     color 0.15s ease,
     transform 0.08s ease;
-  white-space: nowrap;
 }
 
 .mem-btn:active {
@@ -145,7 +151,7 @@
 
 .mem-btn-primary {
   background: #b5482b;
-  color: #fff;
+  color: white;
 }
 
 .mem-btn-primary:hover {
@@ -160,20 +166,31 @@
 
 .mem-btn-ghost:hover {
   color: #1c2530;
-  border-color: #1c2530;
 }
 
+
+/* ICON ACTION BUTTONS */
+
 .mem-btn-small {
-  padding: 6px 14px;
-  font-size: 12.5px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   background: #fff;
   color: #1c2530;
   border: 1px solid #cbd5dc;
 }
 
+.mem-btn-small svg {
+  font-size: 15px;
+}
+
 .mem-btn-small:hover {
   border-color: #2d5f6b;
   color: #2d5f6b;
+  background: #f5f9fa;
 }
 
 .mem-btn-danger {
@@ -183,7 +200,11 @@
 .mem-btn-danger:hover {
   border-color: #b5482b;
   color: #b5482b;
+  background: rgba(181, 72, 43, 0.06);
 }
+
+
+/* TABLE */
 
 .mem-table-wrap {
   padding: 8px 40px 30px;
@@ -209,9 +230,25 @@
   border-bottom: 1px solid #d3dbe1;
 }
 
+
+/* ACTION ALIGNMENT */
+
 .mem-th-actions {
-  text-align: right;
+  text-align: center !important;
+  width: 120px;
 }
+
+.mem-actions-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mem-actions-cell button {
+  margin: 0 4px;
+}
+
+
+/* ROW */
 
 .mem-row td {
   padding: 13px 12px;
@@ -221,6 +258,9 @@
 .mem-row:hover {
   background: #f5f9fa;
 }
+
+
+/* AVATAR */
 
 .mem-identity {
   display: flex;
@@ -238,7 +278,8 @@
   font-family: "Space Mono", monospace;
   font-size: 12px;
   font-weight: 700;
-  color: #fff;
+  color: white;
+  background: #2d5f6b;
   flex-shrink: 0;
 }
 
@@ -257,11 +298,8 @@
   color: #55606a;
 }
 
-.mem-actions-cell {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
+
+/* EMPTY */
 
 .mem-empty {
   text-align: center;
@@ -270,7 +308,20 @@
   font-style: italic;
 }
 
+
+/* FOCUS */
+
+.mem-input:focus-visible,
+.mem-btn:focus-visible {
+  outline: 2px solid #2d5f6b;
+  outline-offset: 2px;
+}
+
+
+/* RESPONSIVE */
+
 @media (max-width: 700px) {
+
   .mem-form {
     flex-direction: column;
     align-items: stretch;
@@ -281,18 +332,18 @@
     padding-left: 20px;
     padding-right: 20px;
   }
+
 }
 
-.mem-input:focus-visible,
-.mem-btn:focus-visible {
-  outline: 2px solid #2d5f6b;
-  outline-offset: 2px;
-}
+
+/* REDUCED MOTION */
 
 @media (prefers-reduced-motion: reduce) {
+
   .mem-btn,
   .mem-floating-label,
   .mem-input {
     transition: none;
   }
+
 }

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import "./Books.css";
+import Swal from "sweetalert2";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 function Book() {
   const [books, setBooks] = useState([]);
@@ -45,9 +47,7 @@ function Book() {
 
   const isBookBorrowed = (bookId) => {
     return records.some(
-      (record) =>
-        record.book_id === bookId &&
-        !record.return_date
+      (record) => record.book_id === bookId && !record.return_date
     );
   };
 
@@ -90,10 +90,31 @@ function Book() {
     };
 
     try {
+      if (editingId && isBookBorrowed(editingId)) {
+        Swal.fire({
+          icon: "warning",
+          title: "Book is borrowed",
+          text: "You cannot update a book while it is borrowed.",
+        });
+        return;
+      }
+
       if (editingId) {
         await api.put(`/books/${editingId}`, bookData);
+
+        Swal.fire({
+          icon: "success",
+          title: "Book updated",
+          text: "The book details were updated successfully.",
+        });
       } else {
         await api.post("/books", bookData);
+
+        Swal.fire({
+          icon: "success",
+          title: "Book added",
+          text: "The book was added successfully.",
+        });
       }
 
       resetForm();
@@ -104,6 +125,15 @@ function Book() {
   };
 
   const handleEdit = (book) => {
+    if (isBookBorrowed(book.id)) {
+      Swal.fire({
+        icon: "warning",
+        title: "Book is borrowed",
+        text: "You cannot edit a book while it is borrowed.",
+      });
+      return;
+    }
+
     setForm({
       title: book.title,
       author: book.author,
@@ -115,12 +145,38 @@ function Book() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this book?")) {
+    if (isBookBorrowed(id)) {
+      Swal.fire({
+        icon: "warning",
+        title: "Book is borrowed",
+        text: "You cannot delete a borrowed book.",
+      });
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: "Delete book?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#b5482b",
+      cancelButtonColor: "#2d5f6b",
+      confirmButtonText: "Yes, delete it",
+    });
+
+    if (!result.isConfirmed) {
       return;
     }
 
     try {
       await api.delete(`/books/${id}`);
+
+      Swal.fire({
+        icon: "success",
+        title: "Deleted",
+        text: "The book has been removed.",
+      });
+
       fetchBooks();
     } catch (err) {
       setError(getErrorMessage(err));
@@ -138,6 +194,7 @@ function Book() {
         {error && <p className="lib-error">{error}</p>}
 
         <form onSubmit={handleSubmit} className="lib-form">
+
           <div className="lib-field">
             <label className="lib-label" htmlFor="title">
               Title
@@ -154,6 +211,7 @@ function Book() {
               className="lib-input"
             />
           </div>
+
 
           <div className="lib-field">
             <label className="lib-label" htmlFor="author">
@@ -172,6 +230,7 @@ function Book() {
             />
           </div>
 
+
           <div className="lib-field lib-field-year">
             <label className="lib-label" htmlFor="published_year">
               Year
@@ -189,13 +248,16 @@ function Book() {
             />
           </div>
 
+
           <div className="lib-form-actions">
+
             <button
               type="submit"
               className="lib-btn lib-btn-primary"
             >
               {editingId ? "Update book" : "Add book"}
             </button>
+
 
             {editingId && (
               <button
@@ -206,11 +268,16 @@ function Book() {
                 Cancel
               </button>
             )}
+
           </div>
+
         </form>
 
+
         <div className="lib-table-wrap">
+
           <table className="lib-table">
+
             <thead>
               <tr>
                 <th>Title</th>
@@ -223,19 +290,27 @@ function Book() {
               </tr>
             </thead>
 
+
             <tbody>
+
               {books.length === 0 ? (
+
                 <tr>
                   <td colSpan="5" className="lib-empty">
                     The shelf is empty — add the first book above.
                   </td>
                 </tr>
+
               ) : (
+
                 books.map((book) => {
+
                   const borrowed = isBookBorrowed(book.id);
 
                   return (
+
                     <tr key={book.id} className="lib-row">
+
                       <td className="lib-title-cell">
                         {book.title}
                       </td>
@@ -248,7 +323,9 @@ function Book() {
                         {book.published_year}
                       </td>
 
+
                       <td>
+
                         <span
                           className={
                             borrowed
@@ -258,31 +335,54 @@ function Book() {
                         >
                           {borrowed ? "Borrowed" : "Available"}
                         </span>
+
                       </td>
 
+
                       <td className="lib-actions-cell">
+
                         <button
                           onClick={() => handleEdit(book)}
+                          disabled={borrowed}
                           className="lib-btn lib-btn-small"
+                          title={
+                            borrowed
+                              ? "Book is borrowed"
+                              : "Edit"
+                          }
                         >
-                          Edit
+                          <FaEdit />
                         </button>
+
 
                         <button
                           onClick={() => handleDelete(book.id)}
                           disabled={borrowed}
                           className="lib-btn lib-btn-small lib-btn-danger"
+                          title={
+                            borrowed
+                              ? "Book is borrowed"
+                              : "Delete"
+                          }
                         >
-                          {borrowed ? "Borrowed" : "Delete"}
+                          <FaTrash />
                         </button>
+
                       </td>
+
                     </tr>
+
                   );
                 })
+
               )}
+
             </tbody>
+
           </table>
+
         </div>
+
       </div>
     </div>
   );

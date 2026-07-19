@@ -49,7 +49,6 @@
 
 .lib-title {
   margin: 0;
-  font-family: "Work Sans", sans-serif;
   font-weight: 700;
   font-size: 28px;
   color: #1c2530;
@@ -60,7 +59,6 @@
   padding: 10px 14px;
   background: rgba(181, 72, 43, 0.08);
   border-left: 3px solid #b5482b;
-  border-radius: 2px;
   color: #b5482b;
   font-size: 13.5px;
   font-weight: 600;
@@ -79,7 +77,6 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 0;
 }
 
 .lib-label {
@@ -94,29 +91,17 @@
 .lib-input {
   width: 100%;
   padding: 10px 12px;
-  font-family: "Work Sans", sans-serif;
   font-size: 14px;
   color: #1c2530;
   background: #f5f7f8;
   border: 1px solid #cbd5dc;
   border-radius: 4px;
   outline: none;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.lib-input::placeholder {
-  color: #9aa6af;
 }
 
 .lib-input:focus {
   border-color: #2d5f6b;
   box-shadow: 0 0 0 3px rgba(45, 95, 107, 0.15);
-}
-
-.lib-input-year {
-  font-family: "Space Mono", monospace;
 }
 
 .lib-form-actions {
@@ -125,26 +110,18 @@
 }
 
 .lib-btn {
-  font-family: "Work Sans", sans-serif;
   font-size: 13.5px;
   font-weight: 600;
   padding: 10px 18px;
   border-radius: 4px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition:
-    background 0.15s ease,
-    transform 0.08s ease;
-  white-space: nowrap;
-}
-
-.lib-btn:active {
-  transform: translateY(1px);
+  transition: 0.15s ease;
 }
 
 .lib-btn-primary {
   background: #b5482b;
-  color: #fff;
+  color: white;
 }
 
 .lib-btn-primary:hover {
@@ -157,33 +134,44 @@
   border-color: #cbd5dc;
 }
 
-.lib-btn-ghost:hover {
-  background: #f5f7f8;
-  color: #1c2530;
-}
+
+/* ICON BUTTONS */
 
 .lib-btn-small {
-  padding: 6px 12px;
-  font-size: 12.5px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #fff;
   color: #1c2530;
-  border-color: #cbd5dc;
+  border: 1px solid #cbd5dc;
+}
+
+.lib-btn-small svg {
+  font-size: 15px;
 }
 
 .lib-btn-small:hover:not(:disabled) {
   border-color: #2d5f6b;
   color: #2d5f6b;
+  background: #f5f9fa;
 }
 
 .lib-btn-danger:hover:not(:disabled) {
   border-color: #b5482b;
   color: #b5482b;
+  background: rgba(181, 72, 43, 0.06);
 }
 
 .lib-btn:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: 0.45;
 }
+
+
+/* TABLE */
 
 .lib-table-wrap {
   padding: 8px 24px 28px;
@@ -193,7 +181,6 @@
 .lib-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13.5px;
 }
 
 .lib-table thead th {
@@ -202,16 +189,26 @@
   font-family: "Space Mono", monospace;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #7c8994;
   background: #f5f7f8;
   border-bottom: 1px solid #d3dbe1;
 }
 
+
+/* ACTION HEADER + BUTTON ALIGNMENT */
+
 .lib-th-actions {
-  text-align: right;
+  text-align: center !important;
 }
+
+.lib-actions-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
 
 .lib-row td {
   padding: 13px 16px;
@@ -224,80 +221,88 @@
 
 .lib-title-cell {
   font-weight: 600;
-  color: #1c2530;
 }
 
-.lib-muted-cell {
+.lib-muted-cell,
+.lib-year-cell {
   color: #55606a;
 }
 
 .lib-year-cell {
   font-family: "Space Mono", monospace;
-  color: #55606a;
 }
 
-.lib-actions-cell {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
 
-.lib-empty {
-  text-align: center;
-  padding: 40px 16px;
-  color: #9aa6af;
-  font-style: italic;
-}
-
-/* status stamps recolored to the new palette */
+/* STATUS */
 
 .lib-stamp {
   display: inline-block;
   font-family: "Space Mono", monospace;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   padding: 4px 10px;
   border-radius: 4px;
-  border: 1px solid currentColor;
 }
 
 .lib-stamp-available {
   color: #2d5f6b;
-  background: rgba(45, 95, 107, 0.07);
+  background: rgba(45,95,107,.07);
+  border: 1px solid #2d5f6b;
 }
 
 .lib-stamp-borrowed {
   color: #b5482b;
-  background: rgba(181, 72, 43, 0.07);
+  background: rgba(181,72,43,.07);
+  border: 1px solid #b5482b;
 }
 
-@media (max-width: 720px) {
-  .lib-form {
-    grid-template-columns: 1fr;
-  }
 
-  .lib-form-actions {
-    justify-content: flex-start;
+.lib-empty {
+  text-align:center;
+  padding:40px 16px;
+  color:#9aa6af;
+  font-style:italic;
+}
+
+
+/* TOOLTIP */
+
+.lib-btn-small[title] {
+  position: relative;
+}
+
+.lib-btn-small[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: 40px;
+  background: #1c2530;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width:720px) {
+
+  .lib-form {
+    grid-template-columns:1fr;
   }
 
   .lib-header,
   .lib-table-wrap {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left:20px;
+    padding-right:20px;
   }
+
 }
+
 
 .lib-input:focus-visible,
 .lib-btn:focus-visible {
-  outline: 2px solid #2d5f6b;
-  outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lib-btn,
-  .lib-input {
-    transition: none;
-  }
+  outline:2px solid #2d5f6b;
+  outline-offset:2px;
 }

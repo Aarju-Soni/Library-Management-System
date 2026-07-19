@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import "./Members.css";
-
-const AVATAR_COLORS = [
-  "#1E4034",
-  "#7A5C1E",
-  "#5B3A29",
-  "#2F4858",
-  "#6B3F3F",
-  "#3D5A3D",
-];
+import Swal from "sweetalert2";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 function getInitials(name) {
   return name
@@ -18,14 +11,6 @@ function getInitials(name) {
     .slice(0, 2)
     .map((word) => word[0]?.toUpperCase() || "")
     .join("");
-}
-
-function getAvatarColor(name) {
-  const sum = name
-    .split("")
-    .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-
-  return AVATAR_COLORS[sum % AVATAR_COLORS.length];
 }
 
 function Members() {
@@ -43,11 +28,22 @@ function Members() {
     const detail = err.response?.data?.detail;
 
     if (Array.isArray(detail)) {
-      return detail.map((error) => error.msg).join(", ");
+      const message = detail[0]?.msg || "";
+
+      if (message.includes("valid email address")) {
+        return "Please enter a valid email address.";
+      }
+
+      if (message.toLowerCase().includes("name")) {
+        return "Please enter your full name.";
+      }
+
+      return message;
     }
 
     return detail || "Something went wrong";
   };
+
 
   const fetchMembers = async () => {
     try {
@@ -55,15 +51,18 @@ function Members() {
 
       const res = await api.get("/members");
       setMembers(res.data);
+
     } catch (err) {
       console.error(err);
       setError("Failed to load members");
     }
   };
 
+
   useEffect(() => {
     fetchMembers();
   }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,6 +72,7 @@ function Members() {
       [name]: value,
     }));
   };
+
 
   const resetForm = () => {
     setForm({
@@ -84,25 +84,52 @@ function Members() {
     setError("");
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
+    if (form.name.trim().split(" ").length < 2) {
+      setError("Please enter your full name.");
+      return;
+    }
+
     try {
+
       if (editingId) {
+
         await api.put(`/members/${editingId}`, form);
+
+        Swal.fire({
+          icon: "success",
+          title: "Member updated",
+          text: "Member details updated successfully.",
+        });
+
       } else {
+
         await api.post("/members", form);
+
+        Swal.fire({
+          icon: "success",
+          title: "Member added",
+          text: "Member enrolled successfully.",
+        });
+
       }
 
+
       resetForm();
-      await fetchMembers();
+      fetchMembers();
+
     } catch (err) {
       setError(getErrorMessage(err));
     }
   };
 
+
   const handleEdit = (member) => {
+
     setForm({
       name: member.name,
       email: member.email,
@@ -110,25 +137,54 @@ function Members() {
 
     setEditingId(member.id);
     setError("");
+
   };
 
+
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this member?")) {
+
+    const result = await Swal.fire({
+      title: "Delete member?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#b5482b",
+      cancelButtonColor: "#2d5f6b",
+      confirmButtonText: "Yes, delete",
+    });
+
+
+    if (!result.isConfirmed) {
       return;
     }
 
+
     try {
+
       await api.delete(`/members/${id}`);
-      await fetchMembers();
+
+      Swal.fire({
+        icon: "success",
+        title: "Deleted",
+        text: "Member removed successfully.",
+      });
+
+      fetchMembers();
+
     } catch (err) {
       setError(getErrorMessage(err));
     }
+
   };
+
 
   return (
     <div className="mem-page">
+
       <div className="mem-ledger">
+
         <header className="mem-header">
+
           <span className="mem-eyebrow">
             Membership Ledger
           </span>
@@ -136,12 +192,21 @@ function Members() {
           <h2 className="mem-title">
             Members
           </h2>
+
         </header>
 
-        {error && <p className="mem-error">{error}</p>}
+
+        {error && (
+          <p className="mem-error">
+            {error}
+          </p>
+        )}
+
 
         <form onSubmit={handleSubmit} className="mem-form">
+
           <div className="mem-field">
+
             <input
               id="mem-name"
               name="name"
@@ -149,6 +214,7 @@ function Members() {
               value={form.name}
               onChange={handleChange}
               required
+              title="Please enter your full name"
               className="mem-input"
             />
 
@@ -158,9 +224,12 @@ function Members() {
             >
               Full name
             </label>
+
           </div>
 
+
           <div className="mem-field">
+
             <input
               id="mem-email"
               name="email"
@@ -169,6 +238,7 @@ function Members() {
               value={form.email}
               onChange={handleChange}
               required
+              title="Please enter a valid email address"
               className="mem-input"
             />
 
@@ -178,9 +248,12 @@ function Members() {
             >
               Email
             </label>
+
           </div>
 
+
           <div className="mem-form-actions">
+
             <button
               type="submit"
               className="mem-btn mem-btn-primary"
@@ -188,7 +261,9 @@ function Members() {
               {editingId ? "Update member" : "Enroll member"}
             </button>
 
+
             {editingId && (
+
               <button
                 type="button"
                 onClick={resetForm}
@@ -196,13 +271,20 @@ function Members() {
               >
                 Cancel
               </button>
+
             )}
+
           </div>
+
         </form>
 
+
         <div className="mem-table-wrap">
+
           <table className="mem-table">
+
             <thead>
+
               <tr>
                 <th>Member</th>
                 <th>Email</th>
@@ -211,40 +293,47 @@ function Members() {
                   Actions
                 </th>
               </tr>
+
             </thead>
 
+
             <tbody>
+
               {members.length === 0 ? (
+
                 <tr>
                   <td colSpan="4" className="mem-empty">
                     No entries yet — enroll the first member above.
                   </td>
                 </tr>
+
               ) : (
+
                 members.map((member) => (
+
                   <tr key={member.id} className="mem-row">
+
                     <td>
+
                       <div className="mem-identity">
-                        <span
-                          className="mem-avatar"
-                          style={{
-                            background: getAvatarColor(
-                              member.name
-                            ),
-                          }}
-                        >
+
+                        <span className="mem-avatar">
                           {getInitials(member.name)}
                         </span>
 
                         <span className="mem-name">
                           {member.name}
                         </span>
+
                       </div>
+
                     </td>
+
 
                     <td className="mem-email-cell">
                       {member.email}
                     </td>
+
 
                     <td className="mem-date-cell">
                       {new Date(
@@ -254,28 +343,42 @@ function Members() {
                       })}
                     </td>
 
+
                     <td className="mem-actions-cell">
+
                       <button
                         onClick={() => handleEdit(member)}
                         className="mem-btn mem-btn-small"
+                        title="Edit"
                       >
-                        Edit
+                        <FaEdit />
                       </button>
+
 
                       <button
                         onClick={() => handleDelete(member.id)}
                         className="mem-btn mem-btn-small mem-btn-danger"
+                        title="Delete"
                       >
-                        Delete
+                        <FaTrash />
                       </button>
+
                     </td>
+
                   </tr>
+
                 ))
+
               )}
+
             </tbody>
+
           </table>
+
         </div>
+
       </div>
+
     </div>
   );
 }
