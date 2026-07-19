@@ -4,7 +4,10 @@
   min-height: 100vh;
   padding: 48px 24px;
   background: #e7ecef;
-  font-family: "Work Sans", -apple-system, sans-serif;
+  font-family:
+    "Work Sans",
+    -apple-system,
+    sans-serif;
   color: #1c2530;
   box-sizing: border-box;
 }

@@ -8,7 +8,10 @@
   height: 60px;
   background: #fff;
   border-bottom: 1px solid #d3dbe1;
-  font-family: "Work Sans", -apple-system, sans-serif;
+  font-family:
+    "Work Sans",
+    -apple-system,
+    sans-serif;
   position: sticky;
   top: 0;
   z-index: 10;

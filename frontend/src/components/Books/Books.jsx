@@ -47,7 +47,7 @@ function Book() {
 
   const isBookBorrowed = (bookId) => {
     return records.some(
-      (record) => record.book_id === bookId && !record.return_date
+      (record) => record.book_id === bookId && !record.return_date,
     );
   };
 
@@ -194,7 +194,6 @@ function Book() {
         {error && <p className="lib-error">{error}</p>}
 
         <form onSubmit={handleSubmit} className="lib-form">
-
           <div className="lib-field">
             <label className="lib-label" htmlFor="title">
               Title
@@ -211,7 +210,6 @@ function Book() {
               className="lib-input"
             />
           </div>
-
 
           <div className="lib-field">
             <label className="lib-label" htmlFor="author">
@@ -230,7 +228,6 @@ function Book() {
             />
           </div>
 
-
           <div className="lib-field lib-field-year">
             <label className="lib-label" htmlFor="published_year">
               Year
@@ -248,16 +245,10 @@ function Book() {
             />
           </div>
 
-
           <div className="lib-form-actions">
-
-            <button
-              type="submit"
-              className="lib-btn lib-btn-primary"
-            >
+            <button type="submit" className="lib-btn lib-btn-primary">
               {editingId ? "Update book" : "Add book"}
             </button>
-
 
             {editingId && (
               <button
@@ -268,64 +259,41 @@ function Book() {
                 Cancel
               </button>
             )}
-
           </div>
-
         </form>
 
-
         <div className="lib-table-wrap">
-
           <table className="lib-table">
-
             <thead>
               <tr>
                 <th>Title</th>
                 <th>Author</th>
                 <th>Year</th>
                 <th>Status</th>
-                <th className="lib-th-actions">
-                  Actions
-                </th>
+                <th className="lib-th-actions">Actions</th>
               </tr>
             </thead>
 
-
             <tbody>
-
               {books.length === 0 ? (
-
                 <tr>
                   <td colSpan="5" className="lib-empty">
                     The shelf is empty — add the first book above.
                   </td>
                 </tr>
-
               ) : (
-
                 books.map((book) => {
-
                   const borrowed = isBookBorrowed(book.id);
 
                   return (
-
                     <tr key={book.id} className="lib-row">
+                      <td className="lib-title-cell">{book.title}</td>
 
-                      <td className="lib-title-cell">
-                        {book.title}
-                      </td>
+                      <td className="lib-muted-cell">{book.author}</td>
 
-                      <td className="lib-muted-cell">
-                        {book.author}
-                      </td>
-
-                      <td className="lib-year-cell">
-                        {book.published_year}
-                      </td>
-
+                      <td className="lib-year-cell">{book.published_year}</td>
 
                       <td>
-
                         <span
                           className={
                             borrowed
@@ -335,54 +303,34 @@ function Book() {
                         >
                           {borrowed ? "Borrowed" : "Available"}
                         </span>
-
                       </td>
 
-
                       <td className="lib-actions-cell">
-
                         <button
                           onClick={() => handleEdit(book)}
                           disabled={borrowed}
                           className="lib-btn lib-btn-small"
-                          title={
-                            borrowed
-                              ? "Book is borrowed"
-                              : "Edit"
-                          }
+                          title={borrowed ? "Book is borrowed" : "Edit"}
                         >
                           <FaEdit />
                         </button>
-
 
                         <button
                           onClick={() => handleDelete(book.id)}
                           disabled={borrowed}
                           className="lib-btn lib-btn-small lib-btn-danger"
-                          title={
-                            borrowed
-                              ? "Book is borrowed"
-                              : "Delete"
-                          }
+                          title={borrowed ? "Book is borrowed" : "Delete"}
                         >
                           <FaTrash />
                         </button>
-
                       </td>
-
                     </tr>
-
                   );
                 })
-
               )}
-
             </tbody>
-
           </table>
-
         </div>
-
       </div>
     </div>
   );

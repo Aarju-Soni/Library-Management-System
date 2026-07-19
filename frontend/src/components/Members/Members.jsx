@@ -15,6 +15,7 @@ function getInitials(name) {
 
 function Members() {
   const [members, setMembers] = useState([]);
+  const [records, setRecords] = useState([]);
 
   const [form, setForm] = useState({
     name: "",
@@ -44,25 +45,32 @@ function Members() {
     return detail || "Something went wrong";
   };
 
-
   const fetchMembers = async () => {
     try {
       setError("");
 
-      const res = await api.get("/members");
-      setMembers(res.data);
+      const [membersRes, recordsRes] = await Promise.all([
+        api.get("/members"),
+        api.get("/borrow"),
+      ]);
 
+      setMembers(membersRes.data);
+      setRecords(recordsRes.data);
     } catch (err) {
       console.error(err);
       setError("Failed to load members");
     }
   };
 
-
   useEffect(() => {
     fetchMembers();
   }, []);
 
+  const isMemberBorrowed = (memberId) => {
+    return records.some(
+      (record) => record.member_id === memberId && !record.return_date,
+    );
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +80,6 @@ function Members() {
       [name]: value,
     }));
   };
-
 
   const resetForm = () => {
     setForm({
@@ -84,7 +91,6 @@ function Members() {
     setError("");
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -95,9 +101,16 @@ function Members() {
     }
 
     try {
+      if (editingId && isMemberBorrowed(editingId)) {
+        Swal.fire({
+          icon: "warning",
+          title: "Member has borrowed books",
+          text: "You cannot update a member while they have a borrowed book.",
+        });
+        return;
+      }
 
       if (editingId) {
-
         await api.put(`/members/${editingId}`, form);
 
         Swal.fire({
@@ -105,9 +118,7 @@ function Members() {
           title: "Member updated",
           text: "Member details updated successfully.",
         });
-
       } else {
-
         await api.post("/members", form);
 
         Swal.fire({
@@ -115,20 +126,24 @@ function Members() {
           title: "Member added",
           text: "Member enrolled successfully.",
         });
-
       }
-
 
       resetForm();
       fetchMembers();
-
     } catch (err) {
       setError(getErrorMessage(err));
     }
   };
 
-
   const handleEdit = (member) => {
+    if (isMemberBorrowed(member.id)) {
+      Swal.fire({
+        icon: "warning",
+        title: "Member has borrowed books",
+        text: "You cannot edit a member while they have a borrowed book.",
+      });
+      return;
+    }
 
     setForm({
       name: member.name,
@@ -137,11 +152,17 @@ function Members() {
 
     setEditingId(member.id);
     setError("");
-
   };
 
-
   const handleDelete = async (id) => {
+    if (isMemberBorrowed(id)) {
+      Swal.fire({
+        icon: "warning",
+        title: "Member has borrowed books",
+        text: "You cannot delete a member while they have borrowed books.",
+      });
+      return;
+    }
 
     const result = await Swal.fire({
       title: "Delete member?",
@@ -153,14 +174,11 @@ function Members() {
       confirmButtonText: "Yes, delete",
     });
 
-
     if (!result.isConfirmed) {
       return;
     }
 
-
     try {
-
       await api.delete(`/members/${id}`);
 
       Swal.fire({
@@ -170,43 +188,24 @@ function Members() {
       });
 
       fetchMembers();
-
     } catch (err) {
       setError(getErrorMessage(err));
     }
-
   };
-
 
   return (
     <div className="mem-page">
-
       <div className="mem-ledger">
-
         <header className="mem-header">
+          <span className="mem-eyebrow">Membership Ledger</span>
 
-          <span className="mem-eyebrow">
-            Membership Ledger
-          </span>
-
-          <h2 className="mem-title">
-            Members
-          </h2>
-
+          <h2 className="mem-title">Members</h2>
         </header>
 
-
-        {error && (
-          <p className="mem-error">
-            {error}
-          </p>
-        )}
-
+        {error && <p className="mem-error">{error}</p>}
 
         <form onSubmit={handleSubmit} className="mem-form">
-
           <div className="mem-field">
-
             <input
               id="mem-name"
               name="name"
@@ -218,18 +217,12 @@ function Members() {
               className="mem-input"
             />
 
-            <label
-              htmlFor="mem-name"
-              className="mem-floating-label"
-            >
+            <label htmlFor="mem-name" className="mem-floating-label">
               Full name
             </label>
-
           </div>
 
-
           <div className="mem-field">
-
             <input
               id="mem-email"
               name="email"
@@ -242,28 +235,17 @@ function Members() {
               className="mem-input"
             />
 
-            <label
-              htmlFor="mem-email"
-              className="mem-floating-label"
-            >
+            <label htmlFor="mem-email" className="mem-floating-label">
               Email
             </label>
-
           </div>
 
-
           <div className="mem-form-actions">
-
-            <button
-              type="submit"
-              className="mem-btn mem-btn-primary"
-            >
+            <button type="submit" className="mem-btn mem-btn-primary">
               {editingId ? "Update member" : "Enroll member"}
             </button>
 
-
             {editingId && (
-
               <button
                 type="button"
                 onClick={resetForm}
@@ -271,114 +253,86 @@ function Members() {
               >
                 Cancel
               </button>
-
             )}
-
           </div>
-
         </form>
 
-
         <div className="mem-table-wrap">
-
           <table className="mem-table">
-
             <thead>
-
               <tr>
                 <th>Member</th>
                 <th>Email</th>
                 <th>Joined</th>
-                <th className="mem-th-actions">
-                  Actions
-                </th>
+                <th className="mem-th-actions">Actions</th>
               </tr>
-
             </thead>
 
-
             <tbody>
-
               {members.length === 0 ? (
-
                 <tr>
                   <td colSpan="4" className="mem-empty">
                     No entries yet — enroll the first member above.
                   </td>
                 </tr>
-
               ) : (
+                members.map((member) => {
+                  const borrowed = isMemberBorrowed(member.id);
 
-                members.map((member) => (
+                  return (
+                    <tr key={member.id} className="mem-row">
+                      <td>
+                        <div className="mem-identity">
+                          <span className="mem-avatar">
+                            {getInitials(member.name)}
+                          </span>
 
-                  <tr key={member.id} className="mem-row">
+                          <span className="mem-name">{member.name}</span>
+                        </div>
+                      </td>
 
-                    <td>
+                      <td className="mem-email-cell">{member.email}</td>
 
-                      <div className="mem-identity">
+                      <td className="mem-date-cell">
+                        {new Date(member.joined_date).toLocaleDateString(
+                          "en-IN",
+                          {
+                            timeZone: "Asia/Kolkata",
+                          },
+                        )}
+                      </td>
 
-                        <span className="mem-avatar">
-                          {getInitials(member.name)}
-                        </span>
+                      <td className="mem-actions-cell">
+                        <button
+                          onClick={() => handleEdit(member)}
+                          disabled={borrowed}
+                          className="mem-btn mem-btn-small"
+                          title={
+                            borrowed ? "Member has borrowed books" : "Edit"
+                          }
+                        >
+                          <FaEdit />
+                        </button>
 
-                        <span className="mem-name">
-                          {member.name}
-                        </span>
-
-                      </div>
-
-                    </td>
-
-
-                    <td className="mem-email-cell">
-                      {member.email}
-                    </td>
-
-
-                    <td className="mem-date-cell">
-                      {new Date(
-                        member.joined_date
-                      ).toLocaleDateString("en-IN", {
-                        timeZone: "Asia/Kolkata",
-                      })}
-                    </td>
-
-
-                    <td className="mem-actions-cell">
-
-                      <button
-                        onClick={() => handleEdit(member)}
-                        className="mem-btn mem-btn-small"
-                        title="Edit"
-                      >
-                        <FaEdit />
-                      </button>
-
-
-                      <button
-                        onClick={() => handleDelete(member.id)}
-                        className="mem-btn mem-btn-small mem-btn-danger"
-                        title="Delete"
-                      >
-                        <FaTrash />
-                      </button>
-
-                    </td>
-
-                  </tr>
-
-                ))
-
+                        <button
+                          onClick={() => handleDelete(member.id)}
+                          disabled={borrowed}
+                          className="mem-btn mem-btn-small mem-btn-danger"
+                          title={
+                            borrowed ? "Member has borrowed books" : "Delete"
+                          }
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
-
             </tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </div>
   );
 }

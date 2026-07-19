@@ -12,13 +12,9 @@ from app.routers.borrow import router as borrow_router
 
 
 load_dotenv()
-
-
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
-
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
 
 
