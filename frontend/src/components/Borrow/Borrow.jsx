@@ -24,23 +24,23 @@ function Borrow() {
   };
 
   const formatDate = (date) => {
-    if (!date) return "";
+  if (!date) return "";
 
-    const [year, month, day, hour, minute, second] = date.split(/[-T:]/);
+  const [year, month, day, hour, minute, second] = date.split(/[-T:]/);
 
-    const localDate = new Date(year, month - 1, day, hour, minute, second);
+  const localDate = new Date(year, month - 1, day, hour, minute, second);
 
-    return localDate.toLocaleString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
-  };
+  return localDate.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+};
 
   const fetchAll = async () => {
     try {

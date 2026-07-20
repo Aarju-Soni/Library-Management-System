@@ -11,8 +11,8 @@ def get_current_time():
 class Book(Base):
     __tablename__ = "books"
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False)
-    author = Column(String(255), nullable=False)
+    title = Column(String(20), nullable=False)
+    author = Column(String(15), nullable=False)
     published_year = Column(Integer)
 
     borrow_records = relationship("BorrowRecord", back_populates="book", cascade="all, delete-orphan")
@@ -21,8 +21,8 @@ class Book(Base):
 class Member(Base):
     __tablename__ = "members"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), nullable=False)
-    email = Column(String(255), nullable=False, unique=True)
+    name = Column(String(20), nullable=False)
+    email = Column(String(20), nullable=False, unique=True)
     joined_date = Column(DateTime(timezone=True), default=get_current_time)
 
     borrow_records = relationship("BorrowRecord", back_populates="member", cascade="all, delete-orphan")

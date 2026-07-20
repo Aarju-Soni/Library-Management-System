@@ -77,8 +77,8 @@ function Book() {
 
     if (
       form.published_year.length !== 4 ||
-      Number(form.published_year) < 1000 ||
-      Number(form.published_year) > 9999
+      Number(form.published_year) < 1500 ||
+      Number(form.published_year) > 2027
     ) {
       setError("Please enter a valid year");
       return;
