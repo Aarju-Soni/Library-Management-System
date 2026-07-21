@@ -25,6 +25,10 @@ function Members() {
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const membersPerPage = 5;
+
   const getErrorMessage = (err) => {
     const detail = err.response?.data?.detail;
 
@@ -54,8 +58,15 @@ function Members() {
         api.get("/borrow"),
       ]);
 
-      setMembers(membersRes.data);
+      const sortedMembers = [...membersRes.data].sort(
+        (a, b) => new Date(b.joined_date) - new Date(a.joined_date),
+      );
+
+      setMembers(sortedMembers);
       setRecords(recordsRes.data);
+
+      // Reset pagination after refresh
+      setCurrentPage(1);
     } catch (err) {
       console.error(err);
       setError("Failed to load members");
@@ -71,6 +82,14 @@ function Members() {
       (record) => record.member_id === memberId && !record.return_date,
     );
   };
+
+  // Pagination calculations
+  const indexOfLastMember = currentPage * membersPerPage;
+  const indexOfFirstMember = indexOfLastMember - membersPerPage;
+
+  const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
+
+  const totalPages = Math.ceil(members.length / membersPerPage);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -276,7 +295,7 @@ function Members() {
                   </td>
                 </tr>
               ) : (
-                members.map((member) => {
+                currentMembers.map((member) => {
                   const borrowed = isMemberBorrowed(member.id);
 
                   return (
@@ -332,6 +351,30 @@ function Members() {
             </tbody>
           </table>
         </div>
+
+        {members.length > 0 && (
+          <div className="mem-pagination">
+            <button
+              className="mem-btn mem-btn-small"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+            >
+              Prev
+            </button>
+
+            <span className="mem-page-number">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              className="mem-btn mem-btn-small"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

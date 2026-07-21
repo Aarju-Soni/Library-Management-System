@@ -10,6 +10,9 @@ function Book() {
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 5;
+
   const [form, setForm] = useState({
     title: "",
     author: "",
@@ -39,6 +42,7 @@ function Book() {
 
       setBooks(booksRes.data);
       setRecords(recordsRes.data);
+      setCurrentPage(1);
     } catch (err) {
       console.error(err);
       setError("Failed to load books");
@@ -50,6 +54,14 @@ function Book() {
       (record) => record.book_id === bookId && !record.return_date,
     );
   };
+
+  // Pagination calculations
+  const indexOfLastBook = currentPage * booksPerPage;
+  const indexOfFirstBook = indexOfLastBook - booksPerPage;
+
+  const currentBooks = books.slice(indexOfFirstBook, indexOfLastBook);
+
+  const totalPages = Math.ceil(books.length / booksPerPage);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -282,7 +294,7 @@ function Book() {
                   </td>
                 </tr>
               ) : (
-                books.map((book) => {
+                currentBooks.map((book) => {
                   const borrowed = isBookBorrowed(book.id);
 
                   return (
@@ -331,6 +343,30 @@ function Book() {
             </tbody>
           </table>
         </div>
+
+        {books.length > 0 && (
+          <div className="lib-pagination">
+            <button
+              className="lib-btn lib-btn-small"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+            >
+              Prev
+            </button>
+
+            <span className="lib-page-number">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              className="lib-btn lib-btn-small"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

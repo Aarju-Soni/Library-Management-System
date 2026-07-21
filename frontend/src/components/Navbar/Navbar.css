@@ -1,68 +1,127 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap");
 
 .nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
   display: flex;
   align-items: center;
   gap: 32px;
-  padding: 0 40px;
+
   height: 60px;
-  background: #fff;
+  padding: 0 40px;
+
+  background: #ffffff;
+
   border-bottom: 1px solid #d3dbe1;
+
   font-family:
     "Work Sans",
     -apple-system,
     sans-serif;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+
+  color: #1c2530;
 }
 
+/* LMS BRAND */
+
 .nav-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 32px;
+
+  text-decoration: none;
+
   font-family: "Space Mono", monospace;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
+
   letter-spacing: 0.08em;
+
   color: #b5482b;
-  padding: 4px 8px;
+
   border: 1.5px solid #b5482b;
   border-radius: 4px;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
+
+.nav-mark:hover {
+  background: #b5482b;
+  color: #ffffff;
+}
+
+/* LINKS */
 
 .nav-links {
   display: flex;
+  align-items: center;
+
   gap: 28px;
+
   height: 100%;
 }
 
 .nav-link {
+  position: relative;
+
   display: flex;
   align-items: center;
+
   height: 100%;
+
+  text-decoration: none;
+
   font-size: 14px;
   font-weight: 600;
+
   color: #55606a;
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
+
+  transition: color 0.15s ease;
 }
 
 .nav-link:hover {
   color: #1c2530;
 }
 
+/* ACTIVE LINK */
+
 .nav-link-active {
   color: #1c2530;
-  border-bottom-color: #b5482b;
 }
 
-.nav-link:focus-visible {
+.nav-link-active::after {
+  content: "";
+
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  height: 2px;
+
+  background: #b5482b;
+}
+
+/* FOCUS */
+
+.nav-link:focus-visible,
+.nav-mark:focus-visible {
   outline: 2px solid #2d5f6b;
-  outline-offset: 2px;
+
+  outline-offset: 3px;
 }
 
-@media (max-width: 500px) {
+/* MOBILE */
+
+@media (max-width: 600px) {
   .nav-bar {
     padding: 0 20px;
     gap: 20px;
@@ -70,5 +129,16 @@
 
   .nav-links {
     gap: 18px;
+  }
+
+  .nav-link {
+    font-size: 13px;
+  }
+
+  .nav-mark {
+    width: 42px;
+    height: 30px;
+
+    font-size: 12px;
   }
 }

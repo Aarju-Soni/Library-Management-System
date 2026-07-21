@@ -13,6 +13,10 @@ function Borrow() {
 
   const [error, setError] = useState("");
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 8;
+
   const getErrorMessage = (err) => {
     const detail = err.response?.data?.detail;
 
@@ -24,23 +28,23 @@ function Borrow() {
   };
 
   const formatDate = (date) => {
-  if (!date) return "";
+    if (!date) return "";
 
-  const [year, month, day, hour, minute, second] = date.split(/[-T:]/);
+    const [year, month, day, hour, minute, second] = date.split(/[-T:]/);
 
-  const localDate = new Date(year, month - 1, day, hour, minute, second);
+    const localDate = new Date(year, month - 1, day, hour, minute, second);
 
-  return localDate.toLocaleString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
-};
+    return localDate.toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+  };
 
   const fetchAll = async () => {
     try {
@@ -56,17 +60,22 @@ function Borrow() {
         const aActive = !a.return_date;
         const bActive = !b.return_date;
 
-        // Active borrowed books first
         if (aActive && !bActive) return -1;
         if (!aActive && bActive) return 1;
 
-        // Newest first inside same group
-        return b.id - a.id;
+        if (aActive && bActive) {
+          return new Date(b.borrow_date) - new Date(a.borrow_date);
+        }
+
+        return new Date(b.return_date) - new Date(a.return_date);
       });
 
       setRecords(sortedRecords);
       setBooks(booksRes.data);
       setMembers(membersRes.data);
+
+      // reset pagination
+      setCurrentPage(1);
     } catch (err) {
       console.error(err);
       setError("Failed to load data");
@@ -76,6 +85,14 @@ function Borrow() {
   useEffect(() => {
     fetchAll();
   }, []);
+
+  const indexOfLastRecord = currentPage * recordsPerPage;
+
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+
+  const currentRecords = records.slice(indexOfFirstRecord, indexOfLastRecord);
+
+  const totalPages = Math.ceil(records.length / recordsPerPage);
 
   const handleBorrow = async (e) => {
     e.preventDefault();
@@ -248,7 +265,7 @@ function Borrow() {
                     </td>
                   </tr>
                 ) : (
-                  records.map((record) => {
+                  currentRecords.map((record) => {
                     const active = !record.return_date;
 
                     return (
@@ -296,6 +313,30 @@ function Borrow() {
               </tbody>
             </table>
           </div>
+
+          {records.length > 0 && (
+            <div className="brw-pagination">
+              <button
+                className="brw-btn brw-btn-small"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+              >
+                Prev
+              </button>
+
+              <span className="brw-page-number">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                className="brw-btn brw-btn-small"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </section>
       </div>
     </div>

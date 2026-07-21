@@ -12,7 +12,9 @@ function Navbar() {
 
   return (
     <nav className="nav-bar">
-      <span className="nav-mark">LMS</span>
+      <Link to="/" className="nav-mark">
+        LMS
+      </Link>
 
       <div className="nav-links">
         {links.map((link) => (
